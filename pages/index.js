@@ -1,7 +1,9 @@
 // Main entry point of your app
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import StreamerGrid from '../components/StreamerGrid'
 import React, { useState } from 'react'
+import Image from 'next/image'
 
 
 const Home = () => {
@@ -32,7 +34,7 @@ const Home = () => {
 
     console.log("From the server: ", json.data)
 
-    setFavoriteChannels(prevState => [...prevState, value])
+    setFavoriteChannels(prevState => [...prevState, json.data])
 
     event.target.elements.name.value = ""
   }
@@ -56,7 +58,7 @@ return (
     </Head>
     <div className={styles.inputContainer}>
       {renderForm()}
-      <div>{favoriteChannels.join(",")}</div>
+      <StreamerGrid channels={favoriteChannels} setChannels={setFavoriteChannels} />
     </div>
   </div>
 )
