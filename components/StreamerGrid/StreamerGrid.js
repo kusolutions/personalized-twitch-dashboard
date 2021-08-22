@@ -4,11 +4,38 @@ import Image from 'next/image'
 
 const StreamerGrid = ({ channels, setChannels }) => {
 
-  const removeChannelAction = channelId => () => {
-    console.log("Removing channel...")
-    setChannels(channels.filter(channel => channel.id != channelId))
+  const removeChannelAction = channelId => async () => {
+    // console.log("Removing channel...")
+    // setChannels(channels.filter(channel => channel.id != channelId))
+
+    console.log('Removing channel with ID: ', channelId)
+
+    const filteredChannels = channels.filter(channel => channel.id != channelId)
+    setChannels(filteredChannels)
+    const joinedChannels = filteredChannels.map(channel => channel.display_name.toLowerCase()).join(",")
+
+    await setDBChannels(joinedChannels)
   }
 
+const setDBChannels = async channels => {
+  try {
+    const path = `https://${window.location.hostname}`
+
+    const response = await fetch(`${path}/api/database`, {
+      method: 'POST',
+      body: JSON.stringify({
+        key: 'CHANNELS',
+        value: channels
+      })
+    })
+
+    if (response.status === 200) {
+      console.log(`Set ${channels} in DB.`)
+    }
+  } catch (error) {
+    console.warn(error.message)
+  }
+}
   const renderGridItem = channel => (
     <div key={channel.id} className={styles.gridItem}>
       <button onClick={removeChannelAction(channel.id)}>X</button>
